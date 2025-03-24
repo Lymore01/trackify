@@ -1,0 +1,48 @@
+{
+  "name": "trackify",
+  "version": "1.0.0",
+  "description": "\"Loading readme...\"",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lymore01/trackify.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Lymore01/trackify/issues"
+  },
+  "homepage": "https://github.com/Lymore01/trackify#readme",
+  "dependencies": {
+    "@prisma/client": "^6.5.0",
+    "@types/cors": "^2.8.17",
+    "axios": "^1.8.4",
+    "bcryptjs": "^3.0.2",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "express-validator": "^7.2.1",
+    "geoip-lite": "^1.4.10",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "pg": "^8.14.1",
+    "request-ip": "^3.3.0",
+    "ua-parser-js": "^2.0.3",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/geoip-lite": "^1.4.4",
+    "@types/morgan": "^1.9.9",
+    "@types/request-ip": "^0.0.41",
+    "nodemon": "^3.1.9",
+    "prisma": "^6.5.0"
+  }
+}
