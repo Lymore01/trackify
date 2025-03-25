@@ -1,3 +1,61 @@
-@base_url = "http://localhost:3000/api"
+@base_url=http://localhost:3000
+
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQzMWNiNzUwLTMwNzctNDQ2ZS04MDA0LTI0YTY3OGYyYTcyOCIsImlhdCI6MTc0Mjg5ODQyNiwiZXhwIjoxNzQyOTg0ODI2fQ.mbABvVs2gCMIUK2u9Tb3Hn73dEd0spWc7LjZDkebCQk
+
+@api_key=f19793fa-c2db-44d5-9415-89228d171dbc
+
+###
+GET {{base_url}}
+
+### register user
+POST {{base_url}}/auth/register
+Content-Type: application/json
+
+{
+    "email":"test@test.com",
+    "password":"123456"
+}
+
+### login user
+POST {{base_url}}/auth/login
+Content-Type: application/json
+
+{
+    "email":"test@test.com",
+    "password":"123456"
+}
+
+### get users
+GET {{base_url}}/api/user
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### generate token
+POST {{base_url}}/auth/generate-key
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### shorten url
+POST {{base_url}}/api/shorten
+Content-Type: application/json
+x-api-key: {{api_key}}
+
+{
+    "original":"https://flick-s.vercel.app/"
+}
+
+### redirect
+GET {{base_url}}/url/cjibq
+
+### get all stats
+GET {{base_url}}/me/stats
+x-api-key: {{api_key}}
+
+### get stats
+GET {{base_url}}/stats?shortId=jqchk
+x-api-key: {{api_key}}
 
 ### post a url
+GET {{base_url}}/api/user
+Authorization: Bearer {{token}}
+

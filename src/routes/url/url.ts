@@ -1,12 +1,19 @@
 import express from "express";
-import { deleteUrl } from "../../controllers/url"
+import { deleteUrl, redirectUrl, shortenUrl } from "../../controllers/url.ts";
+import { authMiddleware as apiKeyMiddleware } from "../../middlewares/auth_api.ts"; //api key
+// import { authenticateToken } from "../../middlewares/authenticate_token.ts";
+import { trackClick } from "../../middlewares/click_tracker.ts";
 
 export const urlRouter = express.Router();
-
-urlRouter.delete("/api/delete/:shortId", async (req, res) => {
-	try {
-		await deleteUrl(req, res);
-	} catch (error) {
-		res.status(500).send({ error: "Internal Server Error" });
-	}
+//  redirect route - public
+urlRouter.get("/url/:shortId", trackClick, async (req, res) => {
+  await redirectUrl(req, res);
 });
+
+urlRouter.delete(
+  "/delete/:shortId",
+  apiKeyMiddleware,
+  async (req, res) => {
+    await deleteUrl(req, res);
+  }
+);

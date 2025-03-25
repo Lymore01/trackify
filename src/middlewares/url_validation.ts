@@ -1,13 +1,14 @@
 import { body, validationResult } from "express-validator";
-import { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction, RequestHandler } from "express";
 
-export const validateUrl = [
-  body("originalUrl").isURL().withMessage("Invalid URL format"),
-  (req: Request, res: Response, next: NextFunction) => {
+export const validateUrl: RequestHandler[] = [
+  body("original").isURL().withMessage("Invalid URL format"),
+  ((req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
     next();
-  },
+  }) as RequestHandler,
 ];

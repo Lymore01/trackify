@@ -1,12 +1,10 @@
-import { prisma } from "../lib/prisma";
-import { Request, Response, NextFunction } from "express";
+import type { User } from "@prisma/client";
+import { prisma } from "../lib/prisma.ts";
+import type { Request, Response, NextFunction } from "express";
 
-interface AuthRequest extends Request {
-  user?: any;
-}
 
 export const authMiddleware = async (
-  req: AuthRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
@@ -21,7 +19,7 @@ export const authMiddleware = async (
 
   const user = await prisma.user.findUnique({
     where: {
-      apiKey
+      apiKey,
     },
   });
 
@@ -29,7 +27,11 @@ export const authMiddleware = async (
     res.status(403).json({ error: "Invalid API Key" });
     return;
   }
-
-  req.user = user;
-  next();
+  if (typeof user === "object" && user !== null) {
+    req.user = user as User;
+    next();
+  } else {
+    res.status(403).json({ error: "Invalid user" });
+    return;
+  }
 };

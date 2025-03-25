@@ -23,7 +23,7 @@ model UrlShort {
   id         String    @id @default(nanoid())
   original   String
   shortId    String    @unique
-  user       User      @relation(fields: [userId], references: [id])
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String
   clicks     ClickTracker[]
   createdAt  DateTime  @default(now())
@@ -31,7 +31,7 @@ model UrlShort {
 
 model ClickTracker {
   id        String    @id @default(uuid())
-  url       UrlShort  @relation(fields: [urlId], references: [id])
+  url       UrlShort  @relation(fields: [urlId], references: [id], onDelete: Cascade)
   urlId     String
   ip        String?
   country   String?

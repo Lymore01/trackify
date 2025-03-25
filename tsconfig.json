@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+      "target": "esnext",
+      "module": "nodenext",
+      "allowImportingTsExtensions": true,
+      "noEmit": true,
+      "rewriteRelativeImportExtensions": true,
+      "verbatimModuleSyntax": true,
+      "strict": true
+    }
+  }
