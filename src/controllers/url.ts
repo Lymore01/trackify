@@ -59,9 +59,25 @@ export const shortenUrl = async (
   }
 
   if (!original) {
+    console.log("invalid long url");
     return res.status(400).json({
       success: false,
       message: "Invalid long Url!",
+    });
+  }
+
+  // check if the url is already shortened
+  const existingShortUrl = await prisma.urlShort.findFirst({
+    where: {
+      original,
+    },
+  });
+
+  if (existingShortUrl) {
+    console.log("existingShortUrl", existingShortUrl);
+    return res.status(400).json({
+      success: false,
+      message: "Url already shortened!",
     });
   }
 

@@ -5,9 +5,7 @@ import { generateApiKey } from "../../controllers/auth.ts";
 
 export const tokenRouter = express.Router();
 
-tokenRouter.use(authenticateToken);
-
-tokenRouter.post("/generate-key", async (req, res) => {
+tokenRouter.post("/generate-key",authenticateToken, async (req, res) => {
     await generateApiKey(req, res)
 })
 

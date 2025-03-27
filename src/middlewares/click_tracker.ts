@@ -3,6 +3,7 @@ import geoip from "geoip-lite";
 import { UAParser } from "ua-parser-js";
 import requestIp from "request-ip";
 import type { Response, Request, NextFunction } from "express";
+import axiosInstance from "../lib/axios.ts";
 
 export const trackClick = async (
   req: Request,
@@ -29,5 +30,42 @@ export const trackClick = async (
     },
   });
 
-  next();
+  // get the owner of the shortId
+  const url = await prisma.urlShort.findFirst({
+    where: {
+      shortId,
+    },
+    select: {
+      userId: true,
+    },
+  });
+
+  // fetch endpoint from db
+  const endpoint = await prisma.endpoint.findFirst({
+    where: {
+      userId: url?.userId,
+    },
+  });
+  // use docx endpoint to send data  /?callbackUrl=http://localhost:3000/api/v1/webhook/docx/userid
+  if (endpoint?.url) {
+    await fetch(endpoint.url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        event: "link.clicked",
+        data: {
+          shortId,
+          ip,
+          country: geo?.country || "unknown",
+          userAgent: deviceInfo.ua || "unknown",
+        },
+      }),
+      });
+  } else {
+    console.error("Endpoint URL is undefined");
+  }
+
+  next(); 
 };

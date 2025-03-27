@@ -5,13 +5,10 @@ import { authMiddleware as apiKeyMiddleware } from "../../middlewares/auth_api.t
 
 export const statsRouter = express.Router();
 
-// statsRouter.use(authenticateToken);
-statsRouter.use(apiKeyMiddleware);
-
-statsRouter.get("/me/stats", async (req, res) => {
+statsRouter.get("/me/stats", apiKeyMiddleware, async (req, res) => {
   await getAllStats(req, res);
 });
 
-statsRouter.get("/stats", async (req, res) => {
+statsRouter.get("/stats",apiKeyMiddleware, async (req, res) => {
   await getStats(req, res);
 });

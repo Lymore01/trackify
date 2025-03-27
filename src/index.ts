@@ -14,10 +14,11 @@ import { tokenRouter } from "./routes/auth/generate_key.ts"
 import { loginRouter } from "./routes/auth/login.ts"
 import { registerRouter } from "./routes/auth/register.ts"
 import swaggerDocs from "../docs/swagger.ts";
+import { webHookRouter } from "./routes/webhooks/index.ts";
 
 const app = express();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4030;
 
 app.use(bodyParser.json());
 app.use(logger);
@@ -32,12 +33,15 @@ app.use("/", statsRouter);
 app.use("/auth", tokenRouter);
 app.use("/auth", loginRouter);
 app.use("/auth", registerRouter);
+app.use("/webhook", webHookRouter);
 
+app.post("/test", (req, res)=>{
+  console.log("Results:", req.body);
+})
 
 // global error handler
 app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server is up on port ${PORT}`);
-  swaggerDocs(app, Number(PORT));
 });

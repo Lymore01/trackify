@@ -1,9 +1,10 @@
-@base_url=http://localhost:3000
+@base_url=http://localhost:4030
 
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQzMWNiNzUwLTMwNzctNDQ2ZS04MDA0LTI0YTY3OGYyYTcyOCIsImlhdCI6MTc0Mjg5ODQyNiwiZXhwIjoxNzQyOTg0ODI2fQ.mbABvVs2gCMIUK2u9Tb3Hn73dEd0spWc7LjZDkebCQk
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQzMWNiNzUwLTMwNzctNDQ2ZS04MDA0LTI0YTY3OGYyYTcyOCIsImlhdCI6MTc0MzAxNzY5OCwiZXhwIjoxNzQzMTA0MDk4fQ.NdfMHXzdfGtyAxY676YLb1cGVLfP9Xkflu1CCWnrwDE
 
-@api_key=f19793fa-c2db-44d5-9415-89228d171dbc
+@api_key=793a61c6-b0bf-4ab2-bb93-d1d999010784
 
+@signature=c153d04e276f415f2db05c56298f9861b1f428c5db4e296d6aa2af987a009de5
 ###
 GET {{base_url}}
 
@@ -12,8 +13,8 @@ POST {{base_url}}/auth/register
 Content-Type: application/json
 
 {
-    "email":"test@test.com",
-    "password":"123456"
+    "email":"test3@test.com",
+    "password":"12345678"
 }
 
 ### login user
@@ -39,9 +40,10 @@ Authorization: Bearer {{token}}
 POST {{base_url}}/api/shorten
 Content-Type: application/json
 x-api-key: {{api_key}}
+Authorization: Bearer {{token}}
 
 {
-    "original":"https://flick-s.vercel.app/"
+    "original":"http://instagram.com" 
 }
 
 ### redirect
@@ -52,10 +54,27 @@ GET {{base_url}}/me/stats
 x-api-key: {{api_key}}
 
 ### get stats
-GET {{base_url}}/stats?shortId=jqchk
+GET {{base_url}}/stats?shortId=00yxc
 x-api-key: {{api_key}}
 
 ### post a url
 GET {{base_url}}/api/user
 Authorization: Bearer {{token}}
+
+
+### testing webhooks
+POST {{base_url}}/webhook/docx
+Content-Type: application/json
+x-webhook-signature:{{signature}}
+
+{
+    "event":"user.created",
+    "data":{
+        "userId":"431cb751-7730-446e-8006-24a678f2a728",
+        "email":"kelly@gmail.com",
+        "password":"1234567",
+        "callbackUrl":"http://localhost:4030/test"
+    }
+}
+
 
