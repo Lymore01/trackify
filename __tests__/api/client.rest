@@ -73,7 +73,7 @@ x-webhook-signature:{{signature}}
         "userId":"431cb751-7730-446e-8006-24a678f2a728",
         "email":"kelly@gmail.com",
         "password":"1234567",
-        "callbackUrl":"http://localhost:4030/test"
+        "callbackUrl":"http://localhost:3000/api/webhook"
     }
 }
 

@@ -1,11 +1,20 @@
-import express from "express"
+import express, { type Request, type Response } from "express"
 import { listenEventsFromDocx } from "../../controllers/webhooks.ts";
 
 export const webHookRouter = express.Router();
 
-webHookRouter.post("/docx", async (req, res) => {
-  await listenEventsFromDocx(req, res);
+const webHookHandlers: Record<string, Function> = {
+  docx: listenEventsFromDocx,
+  // more handlers here
+};
+
+webHookRouter.post("/:service", async (req: Request, res: Response): Promise<void> => {
+  const { service } = req.params;
+  const handler = webHookHandlers[service];
+  if (!handler) {
+    res.status(404).send("Service not found");
+    return;
+  }
+  await handler(req, res);
 });
 
-// use this api endpoint in docx for it to send you data
-// http://localhost:4030/webhook/docx

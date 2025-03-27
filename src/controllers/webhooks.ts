@@ -1,13 +1,6 @@
 import type { Request, Response } from "express";
 import { prisma } from "../lib/prisma.ts";
-import axiosInstance from "../lib/axios.ts";
 import { generateHMAC } from "../lib/utils.ts";
-import { token } from "morgan";
-
-// enum WebhookEvents {
-//   "user.created"="user.created",
-//   "user.deleted"="user.deleted",
-// }
 
 interface WebhookData {
   userId: string;
@@ -18,11 +11,9 @@ interface WebhookData {
 
 export const listenEventsFromDocx = async (req: Request, res: Response) => {
   try {
+    // validate signature
     const signature = req.headers["x-webhook-signature"] as string;
     const payload = JSON.stringify(req.body);
-
-    // Validate the HMAC signature
-    // webhook_secret is shared between docx and the server
     const hash = generateHMAC(process.env.WEBHOOK_SECRET || "", payload);
 
     console.log("hash", hash);
@@ -33,8 +24,19 @@ export const listenEventsFromDocx = async (req: Request, res: Response) => {
 
     const { event, data } = req.body;
 
+    if (!event || !data) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Missing event or data" });
+    }
+
     switch (event) {
       case "user.created":
+        if (!data.userId || !data.email || !data.password) {
+          return res
+            .status(400)
+            .json({ success: false, message: "Invalid user data" });
+        }
         // create a user
         const response = await fetch("http://localhost:4030/auth/register", {
           method: "POST",
@@ -52,7 +54,7 @@ export const listenEventsFromDocx = async (req: Request, res: Response) => {
           data: {
             name: "Docx",
             url: data.callbackUrl,
-            userId: regData.newUser.id,
+            userId: regData.newUser.id, //should be same as docx user id
           },
         });
         // return userid to docx
@@ -64,23 +66,32 @@ export const listenEventsFromDocx = async (req: Request, res: Response) => {
         });
         // console.log("User created");
         break;
+
       case "user.deleted":
-        const user = await prisma.user.findUnique({
-          where: {
-            id: data.userId,
-          },
+        const userExists = await prisma.user.count({
+          where: { id: data.userId },
         });
-        if (!user) {
+        if (!userExists) {
           throw new Error("User not found");
         }
-        // delete a user
-        await axiosInstance.delete(`/user/${data.userId}`);
+        await fetch(`http://localhost:4030/user/${data.userId}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
         break;
       default:
-        console.log("Event not found");
+        console.log(`Unhandled event: ${event}`);
+        return res
+          .status(400)
+          .json({ success: false, message: "Unknown event type" });
     }
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Internal server error");
+  } catch (error:any) {
+    console.error("Webhook Error:", error.message);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
   }
 };

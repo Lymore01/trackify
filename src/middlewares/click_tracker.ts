@@ -46,13 +46,14 @@ export const trackClick = async (
       userId: url?.userId,
     },
   });
-  // use docx endpoint to send data  /?callbackUrl=http://localhost:3000/api/v1/webhook/docx/userid
+  // use docx endpoint to send data
   if (endpoint?.url) {
     await fetch(endpoint.url, {
       method: "POST",
-      headers: {
+      headers: new Headers({
         "Content-Type": "application/json",
-      },
+        "X-User-ID": url?.userId || "",
+      }),
       body: JSON.stringify({
         event: "link.clicked",
         data: {
@@ -64,7 +65,7 @@ export const trackClick = async (
       }),
       });
   } else {
-    console.error("Endpoint URL is undefined");
+    console.warn("No webhook endpoint found for user:", url?.userId);
   }
 
   next(); 
