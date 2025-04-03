@@ -10,10 +10,11 @@ const SALT = 10;
 export const register = async (req: Request, res: Response) => {
   // get user from body
   const body: {
+    id: string;
     email: string;
     password: string;
   } = req.body;
-  const { email, password } = body;
+  const { id, email, password } = body;
   // check if user exists
   const user = await prisma.user.findUnique({
     where: {
@@ -30,6 +31,7 @@ export const register = async (req: Request, res: Response) => {
   const hashedPassword = await bcrypt.hash(password, SALT);
   const newUser = await prisma.user.create({
     data: {
+      id: id,
       email: email,
       password: hashedPassword,
     },

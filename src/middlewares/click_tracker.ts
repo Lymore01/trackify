@@ -4,6 +4,7 @@ import { UAParser } from "ua-parser-js";
 import requestIp from "request-ip";
 import type { Response, Request, NextFunction } from "express";
 import axiosInstance from "../lib/axios.ts";
+import { generateHMAC } from "../lib/utils.ts";
 
 export const trackClick = async (
   req: Request,
@@ -40,33 +41,44 @@ export const trackClick = async (
     },
   });
 
+  console.log("url found")
+
   // fetch endpoint from db
   const endpoint = await prisma.endpoint.findFirst({
     where: {
       userId: url?.userId,
     },
   });
+
+  console.log("endpoint found: ", endpoint?.url)
+
   // use docx endpoint to send data
   if (endpoint?.url) {
+    const body = {
+      event: "link.clicked",
+      data: {
+        shortId,
+        ip,
+        country: geo?.country || "unknown",
+        userAgent: deviceInfo.ua || "unknown",
+      },
+    };
     await fetch(endpoint.url, {
       method: "POST",
       headers: new Headers({
         "Content-Type": "application/json",
         "X-User-ID": url?.userId || "",
+        "x-webhook-signature": generateHMAC(
+          process.env.WEBHOOK_SECRET || "",
+          JSON.stringify(body)
+        ),
       }),
-      body: JSON.stringify({
-        event: "link.clicked",
-        data: {
-          shortId,
-          ip,
-          country: geo?.country || "unknown",
-          userAgent: deviceInfo.ua || "unknown",
-        },
-      }),
-      });
+      body: JSON.stringify(body),
+    });
+    console.log("Event sent")
   } else {
     console.warn("No webhook endpoint found for user:", url?.userId);
   }
 
-  next(); 
+  next();
 };

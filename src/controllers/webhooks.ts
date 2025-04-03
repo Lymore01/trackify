@@ -1,6 +1,11 @@
 import type { Request, Response } from "express";
 import { prisma } from "../lib/prisma.ts";
 import { generateHMAC } from "../lib/utils.ts";
+import Webhook, {
+  MissingHeadersError,
+  VerificationFailedError,
+} from "../lib/webhook.ts";
+import type { UserJSON, WebhookEvent } from "../../@types/Webhooks.js";
 
 interface WebhookData {
   userId: string;
@@ -12,25 +17,47 @@ interface WebhookData {
 export const listenEventsFromDocx = async (req: Request, res: Response) => {
   try {
     // validate signature
+    const TRACKIFY_SIGNING_SECRET = process.env.WEBHOOK_SECRET;
+
+    if (!TRACKIFY_SIGNING_SECRET) {
+      throw new Error(
+        "Error: Please add TRACKIFY_SIGNING_SECRET from Docx Dashboard to .env or .env"
+      );
+    }
+
+    // create trackify webhook with secret
+    const wh = new Webhook(TRACKIFY_SIGNING_SECRET);
+
+    // get headers
     const signature = req.headers["x-webhook-signature"] as string;
-    const payload = JSON.stringify(req.body);
-    const hash = generateHMAC(process.env.WEBHOOK_SECRET || "", payload);
+    const apiKey = req.headers["x-api-key"] as string;
 
-    console.log("hash", hash);
-    if (hash !== signature) {
-      res.status(403).send("Invalid signature");
-      return;
+    if (!signature || !apiKey) {
+      throw new MissingHeadersError("Missing headers");
     }
 
-    const { event, data } = req.body;
+    const payload = req.body;
+    const body = JSON.stringify(payload);
 
-    if (!event || !data) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Missing event or data" });
+    let evt: WebhookEvent;
+
+    try {
+      evt = wh.verify(body, {
+        "webhook-signature": signature,
+      }) as WebhookEvent;
+    } catch (error) {
+      if (error instanceof VerificationFailedError) {
+        console.error(`${error.name}:`, error.message);
+      } else {
+        console.error("Unexpected error:", error);
+      }
+      return res.status(401).json({ success: false, message: "Verification failed" });
     }
 
-    switch (event) {
+    const data = evt.data as UserJSON;
+    const eventType = evt.type
+
+    switch (eventType) {
       case "user.created":
         if (!data.userId || !data.email || !data.password) {
           return res
@@ -78,6 +105,7 @@ export const listenEventsFromDocx = async (req: Request, res: Response) => {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
+            "x-api-key": apiKey,
           },
         });
 
@@ -88,7 +116,7 @@ export const listenEventsFromDocx = async (req: Request, res: Response) => {
           .status(400)
           .json({ success: false, message: "Unknown event type" });
     }
-  } catch (error:any) {
+  } catch (error: any) {
     console.error("Webhook Error:", error.message);
     return res
       .status(500)

@@ -1,10 +1,10 @@
 @base_url=http://localhost:4030
 
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQzMWNiNzUwLTMwNzctNDQ2ZS04MDA0LTI0YTY3OGYyYTcyOCIsImlhdCI6MTc0MzAxNzY5OCwiZXhwIjoxNzQzMTA0MDk4fQ.NdfMHXzdfGtyAxY676YLb1cGVLfP9Xkflu1CCWnrwDE
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InVzZXJfMnVSRHRWcmdQekQzRzA0dzdzTDBDVkQ1T0xoIiwiaWF0IjoxNzQzMzY1NjM1LCJleHAiOjE3NDM0NTIwMzV9.oF8aXk0ENUXGLIV2LKh-n8btCpgTeq6GMsHkSGEwDoI
 
-@api_key=793a61c6-b0bf-4ab2-bb93-d1d999010784
+@api_key=aa5d9ce0-b6c5-4f5e-bbb4-f9c24abcef1f
 
-@signature=c153d04e276f415f2db05c56298f9861b1f428c5db4e296d6aa2af987a009de5
+@signature=9146729876fc7fcc6fd82ef979c658e7cbfd493d7f2df2032466cb1409e948f3
 ###
 GET {{base_url}}
 
@@ -22,8 +22,8 @@ POST {{base_url}}/auth/login
 Content-Type: application/json
 
 {
-    "email":"test@test.com",
-    "password":"123456"
+    "email":"kellytoroitich89@gmail.com",
+    "password":"1234567"
 }
 
 ### get users
@@ -43,7 +43,7 @@ x-api-key: {{api_key}}
 Authorization: Bearer {{token}}
 
 {
-    "original":"http://instagram.com" 
+    "original":"http://gmail.com" 
 }
 
 ### redirect
@@ -62,7 +62,7 @@ GET {{base_url}}/api/user
 Authorization: Bearer {{token}}
 
 
-### testing webhooks
+### testing webhooks - register the user in trackify
 POST {{base_url}}/webhook/docx
 Content-Type: application/json
 x-webhook-signature:{{signature}}
@@ -70,10 +70,10 @@ x-webhook-signature:{{signature}}
 {
     "event":"user.created",
     "data":{
-        "userId":"431cb751-7730-446e-8006-24a678f2a728",
-        "email":"kelly@gmail.com",
+        "userId":"user_2uRDtVrgPzD3G04w7sL0CVD5OLh",
+        "email":"kellytoroitich89@gmail.com",
         "password":"1234567",
-        "callbackUrl":"http://localhost:3000/api/webhook"
+        "callbackUrl":"http://localhost:3000/api/webhooks/trackify"
     }
 }
 

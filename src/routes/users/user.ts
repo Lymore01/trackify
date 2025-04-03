@@ -1,11 +1,11 @@
 // post, get, delete user, update (generate new api key)
 import express from "express";
 import { getUser, deleteUser, updateUser } from "../../controllers/users.ts";
-import { authenticateToken } from "../../middlewares/authenticate_token.ts";
+import { authMiddleware } from "../../middlewares/auth_api.ts";
 
 export const userRouter = express.Router();
 
-userRouter.use(authenticateToken);
+userRouter.use(authMiddleware);
 
 userRouter.get("/user", async (req, res) => {
   await getUser(req, res);
