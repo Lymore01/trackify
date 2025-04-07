@@ -1,4 +1,3 @@
-// post, get, delete user, update (generate new api key)
 import express from "express";
 import { getUser, deleteUser, updateUser } from "../../controllers/users.ts";
 import { authMiddleware } from "../../middlewares/auth_api.ts";

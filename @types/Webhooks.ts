@@ -1,11 +1,11 @@
-interface UserJSON {
+export interface UserJSON {
   userId: string;
   email: string;
   password: string;
   callbackUrl: string;
 }
 
-interface LinkJSON {
+export interface LinkJSON {
   shortId: string;
   ip: string;
   country: string | "unknown";

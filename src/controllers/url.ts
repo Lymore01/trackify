@@ -1,6 +1,5 @@
 import type { Request, Response } from "express";
 import { prisma } from "../lib/prisma.ts";
-import express from "express";
 import { generateShortId } from "../lib/utils.ts";
 
 // named export

@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken";
 import { prisma } from "../lib/prisma.ts";
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
+import { config } from "../../config/config.ts";
+import { generateAccessToken, generateRefreshToken } from "../lib/jwt.ts";
 
 const SALT = 10;
 
@@ -38,9 +40,7 @@ export const register = async (req: Request, res: Response) => {
   });
 
   // generate token
-  const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET!, {
-    expiresIn: "1d",
-  });
+  const token = generateAccessToken(newUser);
 
   if (!token) {
     return res
@@ -87,20 +87,26 @@ export const login = async (req: Request, res: Response) => {
   }
 
   // generate token
-  const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, {
-    expiresIn: "1d",
-  });
+  const accessToken = generateAccessToken(user);
+  const refreshToken = generateRefreshToken(user);
 
-  if (!token) {
+  if (!accessToken) {
     return res
       .status(500)
       .json({ success: false, message: "Error generating token" });
   }
 
+  res.cookie("trackifyRefreshToken", refreshToken, {
+    httpOnly: true,
+    secure: config.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+
   return res.status(200).json({
     success: true,
     message: "User Logged In Successfully!",
-    token,
+    accessToken,
   });
 };
 
@@ -128,3 +134,37 @@ export const generateApiKey = async (req: Request, res: Response) => {
     apiKey,
   });
 };
+
+export const fetchNewAccessToken = async (req: Request, res: Response) => {
+  const refreshToken = req.cookies.trackifyRefreshToken;
+  if (!refreshToken) {
+    return res.status(401).json({ success: false, message: "Unauthorized" });
+  }
+
+  jwt.verify(
+    refreshToken,
+    config.JWT_REFRESH_SECRET!,
+    (err: any, user: any) => {
+      if (err) {
+        return res.status(403).json({ success: false, message: "Forbidden" });
+      }
+      const accessToken = generateAccessToken(user);
+      return res.status(200).json({
+        success: true,
+        accessToken,
+      });
+    }
+  );
+};
+
+export const logout = async (req: Request, res: Response) => {
+  res.clearCookie("trackifyRefreshToken", {
+    httpOnly: true,
+    secure: config.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+  return res.status(200).json({
+    success: true,
+    message: "User Logged Out Successfully!",
+  });
+}

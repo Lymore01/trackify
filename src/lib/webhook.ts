@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import type { WebhookEvent } from "../../@types/Webhooks.js";
+import type { WebhookEvent } from "../../@types/Webhooks.ts";
 
 export interface WebhookOptions {
   format?: "raw";

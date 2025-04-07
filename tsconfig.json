@@ -6,6 +6,14 @@
       "noEmit": true,
       "rewriteRelativeImportExtensions": true,
       "verbatimModuleSyntax": true,
-      "strict": true
+      "strict": true,
+      "baseUrl": ".",
+      "paths": {
+        "@config/*": ["config/*.ts"],
+        "@middlewares/*": ["src/middlewares/*.ts"],
+        "@routes/*": ["src/routes/*.ts"],
+        "@controllers/*": ["src/controllers/*.ts"],
+        "@lib/*": ["src/lib/*.ts"],
+      }
     }
   }

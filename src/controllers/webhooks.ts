@@ -1,23 +1,16 @@
 import type { Request, Response } from "express";
 import { prisma } from "../lib/prisma.ts";
-import { generateHMAC } from "../lib/utils.ts";
 import Webhook, {
   MissingHeadersError,
   VerificationFailedError,
 } from "../lib/webhook.ts";
-import type { UserJSON, WebhookEvent } from "../../@types/Webhooks.js";
-
-interface WebhookData {
-  userId: string;
-  email: string;
-  password: string;
-  callbackUrl: string;
-}
+import type { UserJSON, WebhookEvent } from "../../@types/Webhooks.ts";
+import { config } from "../../config/config.ts";
 
 export const listenEventsFromDocx = async (req: Request, res: Response) => {
   try {
     // validate signature
-    const TRACKIFY_SIGNING_SECRET = process.env.WEBHOOK_SECRET;
+    const TRACKIFY_SIGNING_SECRET = config.WEBHOOK_SECRET;
 
     if (!TRACKIFY_SIGNING_SECRET) {
       throw new Error(

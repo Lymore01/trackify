@@ -1,6 +1,5 @@
 import express from "express";
 import { getAllStats, getStats } from "../../controllers/stats.ts";
-// import { authenticateToken } from "../../middlewares/authenticate_token.ts";
 import { authMiddleware as apiKeyMiddleware } from "../../middlewares/auth_api.ts";
 
 export const statsRouter = express.Router();

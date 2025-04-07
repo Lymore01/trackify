@@ -1,0 +1,10 @@
+export { userRouter } from "./users/user.ts"
+export { urlRouter } from "./url/url.ts"
+export { shortenRouter } from "./url/shorten.ts"
+export { statsRouter } from "./stats/stats.ts"
+export { tokenRouter } from "./auth/generate_key.ts"
+export { loginRouter } from "./auth/login.ts"
+export { registerRouter } from "./auth/register.ts"
+export { webHookRouter } from "./webhooks/index.ts";
+export { getNewTokenRouter } from "./auth/get_token.ts"
+export { logoutRouter } from "./auth/logout.ts";

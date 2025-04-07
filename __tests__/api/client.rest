@@ -36,14 +36,14 @@ POST {{base_url}}/auth/generate-key
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
-### shorten url
+### shorten url - remove auth headers
 POST {{base_url}}/api/shorten
 Content-Type: application/json
 x-api-key: {{api_key}}
-Authorization: Bearer {{token}}
+# Authorization: Bearer {{token}} 
 
 {
-    "original":"http://gmail.com" 
+    "original":"http://test.com" 
 }
 
 ### redirect

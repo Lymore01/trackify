@@ -3,8 +3,8 @@ import geoip from "geoip-lite";
 import { UAParser } from "ua-parser-js";
 import requestIp from "request-ip";
 import type { Response, Request, NextFunction } from "express";
-import axiosInstance from "../lib/axios.ts";
 import { generateHMAC } from "../lib/utils.ts";
+import { config } from "../../config/config.ts";
 
 export const trackClick = async (
   req: Request,
@@ -69,7 +69,7 @@ export const trackClick = async (
         "Content-Type": "application/json",
         "X-User-ID": url?.userId || "",
         "x-webhook-signature": generateHMAC(
-          process.env.WEBHOOK_SECRET || "",
+          config.WEBHOOK_SECRET || "",
           JSON.stringify(body)
         ),
       }),

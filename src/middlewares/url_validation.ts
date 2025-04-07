@@ -1,5 +1,5 @@
 import { body, validationResult } from "express-validator";
-import type { Request, Response, NextFunction, RequestHandler } from "express";
+import type { RequestHandler } from "express";
 
 export const validateUrl: RequestHandler[] = [
   body("original").isURL().withMessage("Invalid URL format"),
